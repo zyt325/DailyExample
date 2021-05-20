@@ -1,0 +1,10 @@
+/*@import "global.css";*/
+
+#header {
+    height: 60px;
+    background-color: #336699;
+}
+
+#navbar a:hover{
+    font-weight: bold;
+}

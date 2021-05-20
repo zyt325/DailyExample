@@ -1,0 +1,51 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #000000;
+}
+
+a:hover {
+    text-decoration: none;
+    color: #000000;
+    background-color: #ffffff;
+
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul > li {
+    display: block;
+    height: 45px;
+    line-height: 45px;
+    text-align: left;
+}
+
+ul > li a {
+    display: block;
+    height: 45px;
+    padding-left: 10px;
+}
+
+button, input[type="button"] {
+    cursor: pointer;
+    /*background-color: #99CCFF;*/
+    padding: 3px 10px;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+}
+button:hover{
+    border:1px solid #000000;
+}
+.op{
+    padding: 3px 5px;
+    line-height: 58px;
+    height: 58px;
+    display: inline-block;
+    float: left;
+}

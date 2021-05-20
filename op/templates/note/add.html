@@ -1,0 +1,81 @@
+{% extends 'base-note.html' %}
+{% load static %}
+{% block title %}
+Add
+{% endblock title %}
+{% block style %}
+{% endblock style %}
+
+{% block content %}
+<div id="title">
+  <div class="input-group input-group-lg">
+    <input type="text" class="form-control title-text">
+    <div class="input-group-append input-group-lg">
+      <input type="password" class="form-control title-pwd" placeholder="请输入保存密码">
+    </div>
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" id="title-submit" onclick="titleSave()">Save</button>
+    </div>
+  </div>
+</div>
+<div id="editor"></div>
+
+{% endblock content %}
+
+{% block javascript_front %}
+
+<script src="{% static 'libs/wangEditor-4.6.15.min.js' %}"></script>
+{% endblock javascript_front %}
+
+{% block javascript_end %}
+<script type="text/javascript">
+  const E = window.wangEditor
+  const editor = new E("#editor")
+  // 或者 const editor = new E(document.getElementById('div1'))
+  editor.config.height = window.innerHeight - 120
+  editor.config.uploadImgServer = '/note/upload-img/'
+  editor.config.uploadImgAccept = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp']
+  editor.config.uploadImgMaxSize = 5 * 1024 * 1024 // 5M
+  editor.config.uploadImgMaxLength = 5 // 一次最多上传 5 个图片
+  editor.config.showLinkImg = false
+  editor.config.excludeMenus = [
+        'emoticon',
+        'video'
+    ]
+  editor.config.languageType = [
+    'Plain text',
+  ]
+  editor.create()
+  function title_placeholder() {
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth() + 1;
+    var day = today.getDate();
+    var hour = today.getHours();
+    var min = today.getMinutes();
+    var sec = today.getSeconds();
+    var today_date = year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+    $('.title-text')[0].placeholder=today_date;
+  }
+  title_placeholder();
+  function titleSave(){
+    var titleText=$('.title-text')[0].value;
+    var titlePwd=$('.title-pwd')[0].value;
+    var editorTxt=editor.txt.html();
+    console.log(titleText)
+    console.log(titlePwd)
+    console.log(editorTxt)
+    $.post('/note/add-note/',{'title':titleText,'pwd':titlePwd,'txt':encodeURIComponent(editorTxt)},function (data){
+      if(data==3){
+        alert('密码错误')
+      }else if(data==2){
+        alert('标题已经存在')
+      }else if(data==4){
+        alert('保存失败')
+      }else if(data['status']==1){
+        window.location.href = "/media/note/"+data['result']['filename'];
+      }
+    })
+  }
+</script>
+{% endblock javascript_end %}

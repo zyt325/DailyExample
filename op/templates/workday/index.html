@@ -1,0 +1,104 @@
+{% extends 'base-bootstrap.html' %}
+{% block title %}
+    Workday
+{% endblock title %}
+{% block style %}
+    <link href="/static/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-table/bootstrap-table-filter-control.min.css" rel="stylesheet">
+    <link href="/static/jquery-editable/jquery-editable.css" rel="stylesheet">
+{% endblock style %}
+
+{% block content %}
+    {#    {% for r in res %}#}
+    {#        {{ r.id }}#}
+    {#        {{ r.workday }}#}
+    {#        {{ r.category }}#}
+    {#    {% endfor %}#}
+    <div class="op" id="toolbar">
+        <button id="add" class="btn btn-secondary">New</button>
+        <button id="del" class="btn btn-secondary">Delete</button>
+    </div>
+    <table id="workday">
+    </table>
+{% endblock content %}
+
+{% block javascript_end %}
+    <script src="/static/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+    <script src="/static/jquery-editable/jquery-poshytip.js"></script>
+    <script src="/static/jquery-editable/jquery-editable-poshytip.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-editable.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#workday').bootstrapTable({
+                url: "/workday/get/",
+                editableUrl: "/workday/op/",
+                pagination: true,
+                showRefresh: true,
+                showColumns: true,
+                sortable: true,
+                filterControl: true,
+                idField: 'id',
+                selectItemName: "id",
+                clickToSelect: true,
+                toobar: '#toolbar',
+                showSearchClearButton: true,
+                search: true,
+                pageSize: "15",
+                pageList: "[10,15,20,50]",
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                    }, {
+                        field: 'id',
+                        title: 'ID',
+                        sortable: true,
+                    }, {
+                        field: 'workday',
+                        title: 'Workday',
+                        sortable: true,
+                        editable: true,
+                    }, {
+                        field: 'category',
+                        title: 'Category',
+                        filterControl: 'select',
+                        sortable: true,
+                        editable: true,
+                        editableType: 'select',
+                        editableSource: "[{render: 'render'}, {workstation: 'workstation'}]",
+                    }
+                ]
+            });
+            $('#del').click(function () {
+                var ids = $.map($('#workday').bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+                if (ids.length != 0) {
+                    $.post('/workday/op/', {'action': 'del', 'ids': JSON.stringify(ids)}, function (data) {
+                        if (data) {
+                            $('#workday').bootstrapTable('remove', {
+                                field: 'id',
+                                values: ids
+                            });
+                        }
+                    })
+                } else {
+                    alert("Please select record!")
+                }
+            });
+            $('#add').click(function () {
+                $('#workday').bootstrapTable('insertRow', {
+                    index: 0,
+                    row: {
+                        id: 0,
+                        workday: '0000-00-00',
+                        category: 'NULL',
+                    }
+                })
+            });
+        });
+
+    </script>
+{% endblock javascript_end %}

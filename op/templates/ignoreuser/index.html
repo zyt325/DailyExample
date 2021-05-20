@@ -1,0 +1,105 @@
+{% extends 'base-bootstrap.html' %}
+{% block title %}
+    IgnoreUser
+{% endblock title %}
+{% block style %}
+    <link href="/static/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-table/bootstrap-table-filter-control.min.css" rel="stylesheet">
+    <link href="/static/jquery-editable/jquery-editable.css" rel="stylesheet">
+{% endblock style %}
+
+{% block content %}
+    <div class="op" id="toolbar">
+        <button type="button" id="add" class="btn btn-secondary">New</button>
+        <button type="button" id="del" class="btn btn-secondary">Delete</button>
+    </div>
+    <table id="ignoreuser">
+    </table>
+{% endblock content %}
+
+{% block javascript_end %}
+    <script src="/static/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+    <script src="/static/jquery-editable/jquery-poshytip.js"></script>
+    <script src="/static/jquery-editable/jquery-editable-poshytip.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-editable.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#ignoreuser').bootstrapTable({
+                url: "/ignoreuser/get/",
+                editableUrl: "/ignoreuser/op/",
+                pagination: true,
+                showRefresh: true,
+                showColumns: true,
+                sortable: true,
+                filterControl: true,
+                idField: 'id',
+                selectItemName: "id",
+                clickToSelect: true,
+                toobar: '#toolbar',
+                showSearchClearButton: true,
+                search: true,
+                pageSize: "15",
+                pageList: "[10,15,20,50]",
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                    }, {
+                        field: 'id',
+                        title: 'ID',
+                        sortable: true,
+                    }, {
+                        field: 'username',
+                        title: 'Username',
+                        sortable: true,
+                        editable: true,
+                    }, {
+                        field: 'service',
+                        title: 'Service',
+                        filterControl: 'select',
+                        sortable: true,
+                        editable: true,
+                        editableType: 'select',
+                        editableSource: "[{ad: 'ad'}, {shotgun: 'shotgun'}, {shotgun2: 'shotgun2'}, {wik_hr: 'wiki_hr'}]",
+                    }, {
+                        field: 'reason',
+                        title: 'Reason',
+                        sortable: true,
+                        editable: true,
+                        editableType: 'textarea',
+                    }
+                ],
+            });
+            $('#del').click(function () {
+                var ids = $.map($('#ignoreuser').bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+                if (ids.length != 0) {
+                    $.post('/ignoreuser/op/', {'action': 'del', 'ids': JSON.stringify(ids)}, function (data) {
+                        if (data) {
+                            $('#ignoreuser').bootstrapTable('remove', {
+                                field: 'id',
+                                values: ids
+                            });
+                        }
+                    })
+                } else {
+                    alert("Please select record!")
+                }
+            });
+            $('#add').click(function () {
+                $('#ignoreuser').bootstrapTable('insertRow', {
+                    index: 0,
+                    row: {
+                        id: 0,
+                        username: 'NULL',
+                        service: 'ad',
+                        reason: 'NULL',
+                    }
+                })
+            });
+        });
+    </script>
+{% endblock javascript_end %}

@@ -1,0 +1,119 @@
+{% extends 'base-bootstrap.html' %} {% block title %} Note {% endblock title %}
+{% block style %}
+<link href="/static/bootstrap-table/bootstrap-table.min.css" rel="stylesheet" />
+<link
+  href="/static/bootstrap-table/bootstrap-table-filter-control.min.css"
+  rel="stylesheet"
+/>
+<style>
+  #note-list,
+  #note-list th,
+  #note-list td {
+    border-left: 0px;
+    border-right: 0px;
+    border-top: 0px;
+  }
+</style>
+{% endblock style %} {% block content %}
+<div class="op" id="toolbar">
+  <button
+    type="button"
+    class="btn btn-secondary"
+    onclick="window.open('{% url 'note:add-note' %}')"
+  >
+    New
+  </button>
+</div>
+<table id="note-list"></table>
+{% endblock content %} {% block javascript_end %}
+<script src="/static/bootstrap-table/bootstrap-table.min.js"></script>
+<script src="/static/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+<script>
+  function table_button(value, row, index) {
+    return [
+      '<button type="button" class="btn btn-secondary edit" title="编辑">Edit</button>',
+      //'<button type="button" class="btn btn-secondary del" title="删除"><i class="fa fa-trash"></i></button>',
+    ].join("");
+  }
+  function title_link(value, row, index) {
+    return [
+      '<a target="_blank" style="display:block;" article_id="',
+      row.id,
+      '" href="/media/note/',
+      row.file_name,
+      '">',
+      value,
+      "</a>",
+    ].join("");
+  }
+  window.operateEvents = {
+    "click .edit": function (e, value, row, index) {
+      console.log(value, row);
+      window.open("/note/edit-note/?id=" + row.id);
+    },
+    "click .del": function (e, value, row, index) {
+      $.post("/note/op/",{ action: "del", ids: JSON.stringify([row.id]) },
+        function (data) {
+          if (data) {
+            $("#note-list").bootstrapTable("remove", {
+              field: "id",
+              values: [row.id],
+            });
+          }
+        }
+      );
+    },
+  };
+  $(document).ready(function () {
+    $("#note-list").bootstrapTable({
+      url: "/note/get/",
+      sidePagination: "server",
+      pagination: true,
+      showRefresh: true,
+      showColumns: true,
+      sortable: true,
+      toobar: "#toolbar",
+      showSearchClearButton: true,
+      showColumnsToggleAll: true,
+      search: true,
+      pageSize: "10",
+      pageList: "[10,15,20,50]",
+      columns: [
+        {
+          field: "id",
+          title: "ID",
+          visible: false,
+        },
+        {
+          field: "title",
+          title: "Title",
+          formatter: title_link,
+          sortable: true,
+          width: "60",
+          widthUnit: "%",
+        },
+        {
+          field: "file_name",
+          title: "FileName",
+          sortable: true,
+          visible: false,
+        },
+        {
+          field: "create_at",
+          title: "Date",
+          sortable: true,
+          visible: false,
+        },
+        {
+          field: "operate",
+          title: "Edit",
+          formatter: table_button,
+          events: window.operateEvents,
+          width: "10",
+          widthUnit: "%",
+        },
+      ],
+    });
+  });
+</script>
+{% endblock javascript_end %}

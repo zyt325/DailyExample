@@ -1,0 +1,126 @@
+{% extends 'base-bootstrap.html' %}
+{% block title %}
+    IpmiRender
+{% endblock title %}
+{% block style %}
+    <link href="/static/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-table/bootstrap-table-filter-control.min.css" rel="stylesheet">
+{% endblock style %}
+
+{% block content %}
+    <p style="text-align: center">0:off，1:on，2:unknown</p>
+    <div class="op" id="toolbar">
+        <button id="update" class="btn btn-secondary">Update</button>
+        <button id="stop" class="btn btn-secondary">Stop</button>
+        <button id="start" class="btn btn-secondary">Start</button>
+    </div>
+    <table id="ipmirender">
+    </table>
+{% endblock content %}
+
+{% block javascript_end %}
+    <script src="/static/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#ipmirender').bootstrapTable({
+                url: "/ipmirender/get/",
+                pagination: true,
+                showRefresh: true,
+                showColumns: true,
+                sortable: true,
+                filterControl: true,
+                idField: 'id',
+                selectItemName: "id",
+                clickToSelect: true,
+                toobar: '#toolbar',
+                pageSize: "12",
+                pageList: "[10,15,20,50,100,200,300]",
+                columns: [
+                    {
+                        field: 'state',
+                        checkbox: true,
+                    }, {
+                        field: 'id',
+                        title: 'ID',
+                        sortable: true,
+                    }, {
+                        field: 'ip',
+                        title: 'IP',
+                        filterControl: 'input',
+                    }, {
+                        field: 'fqdn',
+                        title: 'Fqdn',
+                        filterControl: 'input',
+                    }, {
+                        field: 'status',
+                        title: 'Status',
+                        filterControl: 'select',
+                    }, {
+                        field: 'intf',
+                        title: 'Intf',
+                        visible: false,
+                    }, {
+                        field: 'username',
+                        title: 'UserName',
+                        visible: false,
+                    }, {
+                        field: 'password',
+                        title: 'Password',
+                        visible: false,
+                    }, {
+                        field: 'mdate',
+                        title: 'Date',
+                        sortable: true,
+                    }
+                ]
+            });
+
+            $('#update').click(function () {
+                var ids = $.map($('#ipmirender').bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+                if (ids.length == 0) {
+                    var ids = [];
+                }
+                $.post('/ipmirender/op/', {'action': 'update', 'ids': JSON.stringify(ids)}, function (data) {
+                    console.log(data)
+                    if (data) {
+                        alert('Success');
+                    }
+                })
+            });
+            $('#stop').click(function () {
+                var ids = $.map($('#ipmirender').bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+                if (ids.length != 0) {
+                    $.post('/ipmirender/op/', {'action': 'stop', 'ids': JSON.stringify(ids)}, function (data) {
+                        //console.log(data)
+                        if (data) {
+                            alert('Success');
+                        }
+                    })
+                } else {
+                    alert("Please select record!")
+                }
+            });
+            $('#start').click(function () {
+                var ids = $.map($('#ipmirender').bootstrapTable('getSelections'), function (row) {
+                    return row.id
+                });
+                if (ids.length != 0) {
+                    $.post('/ipmirender/op/', {'action': 'start', 'ids': JSON.stringify(ids)}, function (data) {
+                        // console.log(data)
+                        if (data) {
+                            alert('Success');
+                        }
+                    })
+                } else {
+                    alert("Please select record!")
+                }
+            });
+        })
+        ;
+    </script>
+{% endblock javascript_end %}

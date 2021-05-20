@@ -1,0 +1,25 @@
+html, body {
+    height: 100%;
+}
+
+#container {
+    height: 100%;
+}
+
+#navbar, #main {
+    height: calc(100% - 60px);
+}
+
+#main {
+    width: calc(100% - 221px);
+    float: left;
+    padding: 5px 10px 0 10px;
+    overflow-y: auto;
+}
+
+#navbar {
+    float: left;
+    width: 200px;
+    border-right: 1px solid #f8f9fa !important;
+}
+

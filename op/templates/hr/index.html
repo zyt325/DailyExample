@@ -1,0 +1,114 @@
+{% extends 'base-bootstrap.html' %}
+{% block title %}
+    HR
+{% endblock title %}
+{% block style %}
+    <link href="/static/bootstrap-table/bootstrap-table.min.css" rel="stylesheet">
+    <link href="/static/bootstrap-table/bootstrap-table-filter-control.min.css" rel="stylesheet">
+{% endblock style %}
+
+{% block content %}
+    <table id="hr_employees">
+    </table>
+{% endblock content %}
+
+{% block javascript_end %}
+    <script src="/static/bootstrap-table/bootstrap-table.min.js"></script>
+    <script src="/static/bootstrap-table/bootstrap-table-filter-control.min.js"></script>
+
+    <script>
+        function table_pic(value, row, index) {
+            return [
+                '<a href="https://hr.base-fx.com/index.php/api/staffPhoto/username/',
+                value,
+                '" target="_blank">',
+                '<img height="105px" src="https://hr.base-fx.com/index.php/api/staffPhoto/username/',
+                value,
+                '" "/width/200/height/200">',
+                '</a>'
+            ].join('')
+        }
+
+        $(document).ready(function () {
+            $('#hr_employees').bootstrapTable({
+                url: "/hr/get/",
+                sidePagination: 'server',
+                pagination: true,
+                showRefresh: true,
+                showColumns: true,
+                sortable: true,
+                filterControl: true,
+                showSearchClearButton: true,
+                search: true,
+                pageSize: "15",
+                pageList: "[10,15,20,50]",
+                columns: [{
+                    field: 'id',
+                    title: 'ID',
+                    visible: false,
+                }, {
+                    field: 'category',
+                    title: 'Category',
+                    filterControl: 'select'
+                }, {
+                    field: 'status',
+                    title: 'Status',
+                    sortable: true,
+                    filterControl: 'select'
+                }, {
+                    field: 'username',
+                    title: 'UserName'
+                }, {
+                    field: 'chinese_full_name',
+                    title: 'Chinese_name',
+                    visible: false,
+                }, {
+                    field: 'english_full_name',
+                    title: 'English_name',
+                    visible: false,
+                }, {
+                    field: 'gender',
+                    title: 'gender',
+                    visible: false,
+                }, {
+                    field: 'department_code',
+                    title: 'Dep',
+                    sortable: true,
+                    filterControl: 'select'
+                }, {
+                    field: 'office_code',
+                    title: 'Office',
+                    sortable: true,
+                    filterControl: 'select'
+                }, {
+                    field: 'start_date',
+                    title: 'Start_date',
+                    sortable: true,
+                }, {
+                    field: 'employee_start_date',
+                    title: 'Em_start_date'
+                }, {
+                    field: 'end_date',
+                    title: 'End_date',
+                    sortable: true,
+                }, {
+                    field: 'mobile',
+                    title: 'Mobile',
+                    visible: false,
+                }, {
+                    field: 'disable_account_date',
+                    title: 'disable_account',
+                    visible: false,
+                }, {
+                    field: 'backup_delete_email_date',
+                    title: 'Delete_backup_email',
+                    visible: false,
+                }, {
+                    field: 'username',
+                    title: 'Pic',
+                    formatter: table_pic
+                }]
+            });
+        });
+    </script>
+{% endblock javascript_end %}
